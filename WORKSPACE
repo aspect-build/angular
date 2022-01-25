@@ -5,12 +5,30 @@ workspace(
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+# Fetch bazel_skylib to check bazel versions
+http_archive(
+    name = "bazel_skylib",
+    sha256 = "c6966ec828da198c5d9adbaa94c05e3a1c7f21bd012a0b29ba8ddbccb2c93b0d",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.1.1/bazel-skylib-1.1.1.tar.gz",
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.1.1/bazel-skylib-1.1.1.tar.gz",
+    ],
+)
+
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+
+bazel_skylib_workspace()
+
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "ddb78717b802f8dd5d4c01c340ecdc007c8ced5c1df7db421d0df3d642ea0580",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.0/rules_nodejs-4.6.0.tar.gz"],
+    sha256 = "f690430f4d4cc403b5c90d0f0b21842183b56b732fff96cfe6555fe73189906a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.0.1/rules_nodejs-5.0.1.tar.gz"],
 )
+
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+
+build_bazel_rules_nodejs_dependencies()
 
 # The PKG rules are needed to build tar packages for integration tests. The builtin
 # rule in `@bazel_tools` is not Windows compatible and outdated.
@@ -23,12 +41,16 @@ http_archive(
     ],
 )
 
+load("@bazel_skylib//lib:versions.bzl", "versions")
+
+versions.check(minimum_bazel_version = "4.2.2")
+
 # Check the rules_nodejs version and download npm dependencies
 # Note: bazel (version 2 and after) will check the .bazelversion file so we don't need to
 # assert on that.
-load("@build_bazel_rules_nodejs//:index.bzl", "check_rules_nodejs_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:index.bzl", "check_build_bazel_rules_nodejs_version", "node_repositories", "yarn_install")
 
-check_rules_nodejs_version(minimum_version_string = "2.2.0")
+check_build_bazel_rules_nodejs_version(minimum_version_string = "2.2.0")
 
 # Setup the Node.js toolchain
 node_repositories(
@@ -40,11 +62,17 @@ load("//integration:npm_package_archives.bzl", "npm_package_archives")
 
 yarn_install(
     name = "npm",
+    data = [
+        "//:scripts/puppeteer-chromedriver-versions.js",
+        "//:scripts/webdriver-manager-update.js",
+        "//tools:postinstall-patches.js",
+    ],
     # Note that we add the postinstall script here so that the dependencies are re-installed
     # when the postinstall patches are modified.
-    data = ["//tools:postinstall-patches.js"],
+    exports_directories_only = False,
     manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
+    symlink_node_modules = False,
     yarn_lock = "//:yarn.lock",
 )
 
@@ -64,7 +92,7 @@ browser_repositories()
 
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
-esbuild_repositories()
+esbuild_repositories(npm_repository = "npm")
 
 load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
 

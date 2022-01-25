@@ -3,12 +3,12 @@
 
 load(
     # Replaced with "//@bazel/typescript/internal:..." in published package
-    "@npm//@bazel/typescript/internal:build_defs.bzl",
+    "@npm//@bazel/concatjs/internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
 load(
     # Replaced with "//@bazel/typescript/internal:..." in published package
-    "@npm//@bazel/typescript/internal:common/compilation.bzl",
+    "@npm//@bazel/concatjs/internal:common/compilation.bzl",
     _COMMON_ATTRIBUTES = "COMMON_ATTRIBUTES",
     _COMMON_OUTPUTS = "COMMON_OUTPUTS",
     _DEPS_ASPECTS = "DEPS_ASPECTS",
@@ -17,7 +17,7 @@ load(
 )
 load(
     # Replaced with "//@bazel/typescript/internal:..." in published package
-    "@npm//@bazel/typescript/internal:ts_config.bzl",
+    "@npm//@bazel/concatjs/internal:ts_config.bzl",
     _TsConfigInfo = "TsConfigInfo",
 )
 load(
