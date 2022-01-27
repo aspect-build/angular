@@ -9,7 +9,7 @@
 /// <reference types="node"/>
 /// <reference lib="es2017"/>
 
-import {format, parseTsconfig} from '@bazel/typescript';
+import {format, parseTsconfig} from '@bazel/concatjs/internal/tsc_wrapped';
 import {Extractor, ExtractorConfig, IConfigFile, IExtractorConfigPrepareOptions, IExtractorInvokeOptions} from '@microsoft/api-extractor';
 import * as fs from 'fs';
 import * as path from 'path';

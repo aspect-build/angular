@@ -20,6 +20,11 @@ load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
 bazel_skylib_workspace()
 
 # Fetch rules_nodejs so we can install our npm dependencies
+# local_repository(
+#     name = "build_bazel_rules_nodejs",
+#     path = "/aspect/rules_nodejs",
+# )
+
 http_archive(
     name = "build_bazel_rules_nodejs",
     sha256 = "f690430f4d4cc403b5c90d0f0b21842183b56b732fff96cfe6555fe73189906a",
@@ -49,10 +54,16 @@ versions.check(minimum_bazel_version = "4.2.2")
 # Note: bazel (version 2 and after) will check the .bazelversion file so we don't need to
 # assert on that.
 load("@build_bazel_rules_nodejs//:index.bzl", "check_build_bazel_rules_nodejs_version", "node_repositories", "yarn_install")
+load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 check_build_bazel_rules_nodejs_version(minimum_version_string = "2.2.0")
 
-# Setup the Node.js toolchain
+nodejs_register_toolchains(
+    name = "node16",
+    node_version = "16.10.0",
+)
+
+# # Setup the Node.js toolchain
 node_repositories(
     node_version = "16.10.0",
     package_json = ["//:package.json"],

@@ -7,7 +7,8 @@
  */
 
 import type {AngularCompilerOptions, CompilerHost as NgCompilerHost, TsEmitCallback, Program, CompilerOptions} from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, UncachedFileLoader} from '@bazel/concatjs/internal/tsc_wrapped';
+import {runAsWorker, runWorkerLoop} from '@bazel/worker';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';

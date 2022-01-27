@@ -1,3 +1,5 @@
+"@bazel/concatjs": "https://github.com/dymart/bazel-concatjs-private.git#6c773b1a303042c935153abc94c65254bb8a7409",
+
 <h1 align="center">Angular - The modern web developer's platform.</h1>
 
 <p align="center">

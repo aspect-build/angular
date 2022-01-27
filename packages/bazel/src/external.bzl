@@ -21,11 +21,14 @@ load(
     _TsConfigInfo = "TsConfigInfo",
 )
 load(
+    "@rules_nodejs//nodejs:providers.bzl",
+    _js_module_info = "js_module_info",
+)
+load(
     "@build_bazel_rules_nodejs//:providers.bzl",
     _LinkablePackageInfo = "LinkablePackageInfo",
     _NpmPackageInfo = "NpmPackageInfo",
     _js_ecma_script_module_info = "js_ecma_script_module_info",
-    _js_module_info = "js_module_info",
     _js_named_module_info = "js_named_module_info",
     _node_modules_aspect = "node_modules_aspect",
 )

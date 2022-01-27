@@ -65,6 +65,7 @@
     "@babel/template": "7.8.6",
     "@babel/traverse": "7.8.6",
     "@bazel/concatjs": "5.0.1",
+    "@bazel/worker": "5.0.1",
     "@bazel/esbuild": "5.0.1",
     "@bazel/jasmine": "5.0.1",
     "@bazel/protractor": "5.0.1",
