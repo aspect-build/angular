@@ -44,7 +44,8 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
     data += [
         # The Yarn files also need to be part of the integration test as runfiles
         # because the `yarn_bin` target is not a self-contained standalone binary.
-        "@nodejs//:yarn_files",
+        # "@nodejs//:yarn_files",
+        "@yarn//:yarn_files",
     ]
 
     if setup_chromium:
@@ -109,10 +110,13 @@ def _ng_integration_test(name, setup_chromium = False, **kwargs):
         data = data,
         environment = environment,
         toolchains = toolchains,
-        tool_mappings = {
-            "@nodejs//:yarn_bin": "yarn",
-            "@nodejs//:node_bin": "node",
-        },
+        # tool_mappings = {
+        #     "@nodejs//:yarn_bin": "yarn",
+        #     "@nodejs//:node_bin": "node",
+        # },
+        tool_mappings = select({
+            "@bazel_tools//src/conditions:linux_x86_64": {"@yarn//:yarn_bin": "yarn", "@node16_linux_amd64//:node_bin": "node"},
+        }),
         # 15-minute timeout
         timeout = "long",
         # Tells bazel that this test should be allocated a large amount of memory.

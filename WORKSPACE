@@ -25,10 +25,16 @@ bazel_skylib_workspace()
 #     path = "/aspect/rules_nodejs",
 # )
 
+# http_archive(
+#     name = "rules_nodejs",
+#     sha256 = "4537c08222a171bf9d7f96bab7da04daa986ca1386c035daf8a54fbeeb6abdf2",
+#     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.0.1/rules_nodejs-core-5.0.1.tar.gz"],
+# )
+
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "f690430f4d4cc403b5c90d0f0b21842183b56b732fff96cfe6555fe73189906a",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.0.1/rules_nodejs-5.0.1.tar.gz"],
+    sha256 = "a09edc4ba3931a856a5ac6836f248c302d55055d35d36e390a0549799c33145b",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.0.2/rules_nodejs-5.0.2.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")

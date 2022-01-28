@@ -5,9 +5,13 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "4913ea835810c195df24d3a929315c29a64566cc48e409d8b0f35008b4e02e59",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.4.4/rules_nodejs-4.4.4.tar.gz"],
+    sha256 = "f690430f4d4cc403b5c90d0f0b21842183b56b732fff96cfe6555fe73189906a",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/5.0.1/rules_nodejs-5.0.1.tar.gz"],
 )
+
+load("@build_bazel_rules_nodejs//:repositories.bzl", "build_bazel_rules_nodejs_dependencies")
+
+build_bazel_rules_nodejs_dependencies()
 
 # Fetch sass rules for compiling sass files
 http_archive(
@@ -33,6 +37,7 @@ node_repositories(
 # Install our npm dependencies into @npm
 yarn_install(
     name = "npm",
+    exports_directories_only = False,
     frozen_lockfile = False,
     package_json = "//:package.json",
     # Turn off symlink_node_modules here as it causes flakiness with missing
@@ -67,4 +72,4 @@ sass_repositories()
 
 load("@build_bazel_rules_nodejs//toolchains/esbuild:esbuild_repositories.bzl", "esbuild_repositories")
 
-esbuild_repositories()
+esbuild_repositories(npm_repository = "npm")
