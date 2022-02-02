@@ -72,7 +72,7 @@ nodejs_register_toolchains(
 # # Setup the Node.js toolchain
 node_repositories(
     node_version = "16.10.0",
-    package_json = ["//:package.json"],
+    # package_json = ["//:package.json"],
 )
 
 load("//integration:npm_package_archives.bzl", "npm_package_archives")

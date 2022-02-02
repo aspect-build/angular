@@ -42,7 +42,15 @@
     "@angular-devkit/core" "13.2.0"
     rxjs "6.6.7"
 
-"@angular-devkit/build-angular@13.2.0", "@angular-devkit/build-angular@^13.0.3":
+"@angular-devkit/architect@0.1302.1":
+  version "0.1302.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/architect/-/architect-0.1302.1.tgz#0388a9b9b2bbb63ea57085cece8c5e362fbc7f27"
+  integrity sha512-h5LA1VTmWKLLzYvnLPqwdyLI9l43FVIUflvmDf6s2ScTrVf3Bb7B4KkCBDdNa8FxnBitfFqKJBf6RGcKjjeDcw==
+  dependencies:
+    "@angular-devkit/core" "13.2.1"
+    rxjs "6.6.7"
+
+"@angular-devkit/build-angular@13.2.0":
   version "13.2.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-13.2.0.tgz#5880890b5083a31f96d237ffee5f82af6fcc11a8"
   integrity sha512-cHnm/P7uKJjKh2BCN8gnnd240J5z3IesQyRAx88kFSlL5sKCGyGoAYKAjU585/lllIXjtFXSR/S2d/cHg8ShKw==
@@ -62,6 +70,78 @@
     "@babel/template" "7.16.7"
     "@discoveryjs/json-ext" "0.5.6"
     "@ngtools/webpack" "13.2.0"
+    ansi-colors "4.1.1"
+    babel-loader "8.2.3"
+    babel-plugin-istanbul "6.1.1"
+    browserslist "^4.9.1"
+    cacache "15.3.0"
+    circular-dependency-plugin "5.2.2"
+    copy-webpack-plugin "10.2.1"
+    core-js "3.20.3"
+    critters "0.0.16"
+    css-loader "6.5.1"
+    esbuild-wasm "0.14.14"
+    glob "7.2.0"
+    https-proxy-agent "5.0.0"
+    inquirer "8.2.0"
+    jsonc-parser "3.0.0"
+    karma-source-map-support "1.4.0"
+    less "4.1.2"
+    less-loader "10.2.0"
+    license-webpack-plugin "4.0.0"
+    loader-utils "3.2.0"
+    mini-css-extract-plugin "2.5.3"
+    minimatch "3.0.4"
+    open "8.4.0"
+    ora "5.4.1"
+    parse5-html-rewriting-stream "6.0.1"
+    piscina "3.2.0"
+    postcss "8.4.5"
+    postcss-import "14.0.2"
+    postcss-loader "6.2.1"
+    postcss-preset-env "7.2.3"
+    regenerator-runtime "0.13.9"
+    resolve-url-loader "5.0.0"
+    rxjs "6.6.7"
+    sass "1.49.0"
+    sass-loader "12.4.0"
+    semver "7.3.5"
+    source-map-loader "3.0.1"
+    source-map-support "0.5.21"
+    stylus "0.56.0"
+    stylus-loader "6.2.0"
+    terser "5.10.0"
+    text-table "0.2.0"
+    tree-kill "1.2.2"
+    tslib "2.3.1"
+    webpack "5.67.0"
+    webpack-dev-middleware "5.3.0"
+    webpack-dev-server "4.7.3"
+    webpack-merge "5.8.0"
+    webpack-subresource-integrity "5.1.0"
+  optionalDependencies:
+    esbuild "0.14.14"
+
+"@angular-devkit/build-angular@^13.0.3":
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-angular/-/build-angular-13.2.1.tgz#cee8a49b88754054948e5ddfde6b901407bc771a"
+  integrity sha512-bK1fXqtE/By9cybmVp7oFbCKoI6y9AlZO3k/k7AsyMgLtKL1YYLPN93Tq6L99W+zFI9+8V7x5bjuXWiexA63DA==
+  dependencies:
+    "@ampproject/remapping" "1.1.1"
+    "@angular-devkit/architect" "0.1302.1"
+    "@angular-devkit/build-webpack" "0.1302.1"
+    "@angular-devkit/core" "13.2.1"
+    "@babel/core" "7.16.12"
+    "@babel/generator" "7.16.8"
+    "@babel/helper-annotate-as-pure" "7.16.7"
+    "@babel/plugin-proposal-async-generator-functions" "7.16.8"
+    "@babel/plugin-transform-async-to-generator" "7.16.8"
+    "@babel/plugin-transform-runtime" "7.16.10"
+    "@babel/preset-env" "7.16.11"
+    "@babel/runtime" "7.16.7"
+    "@babel/template" "7.16.7"
+    "@discoveryjs/json-ext" "0.5.6"
+    "@ngtools/webpack" "13.2.1"
     ansi-colors "4.1.1"
     babel-loader "8.2.3"
     babel-plugin-istanbul "6.1.1"
@@ -141,10 +221,30 @@
     "@angular-devkit/architect" "0.1302.0"
     rxjs "6.6.7"
 
+"@angular-devkit/build-webpack@0.1302.1":
+  version "0.1302.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-webpack/-/build-webpack-0.1302.1.tgz#93f2c814c364805bf86ef75bb4eb761398d7558c"
+  integrity sha512-MYWGqXK42ksnhArLjycPfwxGh7fsR87LRL4yV3e2EfGl07s7mAnohnRhyAs8o8lxRHQU4+yBs9JnMWRcqqqp2A==
+  dependencies:
+    "@angular-devkit/architect" "0.1302.1"
+    rxjs "6.6.7"
+
 "@angular-devkit/core@13.2.0":
   version "13.2.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-13.2.0.tgz#d7ee99ba40af70193a436a27ee1591a1ec754cd9"
   integrity sha512-5+aV2W2QUazySMKusBuT2pi2qsXWpTHJG2x62mKGAy0lxzwG8l3if+WP3Uh85SQS+zqlHeKxEbmm9zNn8ZrzFg==
+  dependencies:
+    ajv "8.9.0"
+    ajv-formats "2.1.1"
+    fast-json-stable-stringify "2.1.0"
+    magic-string "0.25.7"
+    rxjs "6.6.7"
+    source-map "0.7.3"
+
+"@angular-devkit/core@13.2.1":
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-13.2.1.tgz#5815de99fa8b8b2a2188b6f7f2472d6bb96f0797"
+  integrity sha512-yR+FJq/RfthPmK0LtPIjj6mZLzLGMQ137yyOljsRgHoFhLxtluz9FdjyAk+61rP0LxH3FCt4qRWa9jd7+oBJxw==
   dependencies:
     ajv "8.9.0"
     ajv-formats "2.1.1"
@@ -550,7 +650,7 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-plugin-utils/-/helper-plugin-utils-7.16.7.tgz#aa3a8ab4c3cceff8e65eb9e73d87dc4ff320b2f5"
   integrity sha512-Qg3Nk7ZxpgMrsox6HreY1ZNKdBq7K72tDSliA6dCl5f007jR4ne8iD5UzuNnCJH2xBf2BEEVGr+/OL6Gdp7RxA==
 
-"@babel/helper-remap-async-to-generator@^7.16.8":
+"@babel/helper-remap-async-to-generator@^7.16.0", "@babel/helper-remap-async-to-generator@^7.16.8":
   version "7.16.8"
   resolved "https://registry.yarnpkg.com/@babel/helper-remap-async-to-generator/-/helper-remap-async-to-generator-7.16.8.tgz#29ffaade68a367e2ed09c90901986918d25e57e3"
   integrity sha512-fm0gH7Flb8H51LqJHy3HJ3wnE1+qtYR2A99K06ahwrawLdOFsCEWjZOrYricXJHoPSudNKxrMBUPEIPxiIIvBw==
@@ -1213,15 +1313,24 @@
     source-map-support "0.5.9"
     tsutils "3.21.0"
 
+"@bazel/concatjs@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-5.0.2.tgz#baef1968f88b52480e2d88eeb72a29f9908b5db9"
+  integrity sha512-AyrUemSnX2sJgLryccMrrUbrKLQVbv/kBJul22/xMwJtDZ2LaZZxppGmA13T6smzvl9ltRx46IWrDwjKJIkEag==
+  dependencies:
+    protobufjs "6.8.8"
+    source-map-support "0.5.9"
+    tsutils "3.21.0"
+
 "@bazel/esbuild@5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.0.0.tgz#5013c5d40fad9e7a46e773275c8ebeb36de612f5"
   integrity sha512-pR2LOe9t6osaZkfKxQfvmSbTEsgaEq40h5xC3DYYK49spW1nAbcUeFcmjIqf4V/sEKP/U9yeQ2I3SIcOTSMCNg==
 
-"@bazel/esbuild@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.0.1.tgz#81fe204c519c58681adde8a02074dd6518312a47"
-  integrity sha512-rz2i3r5p3ZVKAjnW+SWUwSv8VS++uxTMF8Td8ZVSmas9k1yBYvH8Q33aI58YVkEGHBrl3eNWftllYH++PYSGeA==
+"@bazel/esbuild@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/esbuild/-/esbuild-5.0.2.tgz#842f275406f31afeccc32b6e5ecfcfc45ab5bb08"
+  integrity sha512-cVlC9Ht5OdsJUp/mwYaRDJXF11yYQTyzkh7MSwUlmU+itceHNyDmNDWZezn0RW11PSWnnC+ln7vPGECSX+Yk9Q==
 
 "@bazel/ibazel@^0.15.8":
   version "0.15.10"
@@ -1236,10 +1345,10 @@
     c8 "~7.5.0"
     jasmine-reporters "~2.5.0"
 
-"@bazel/jasmine@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-5.0.1.tgz#6245539eb6ce5a78220ad1e22f0eed4e7053b267"
-  integrity sha512-E2MepUTInX404sxdku3bR5lWjIpOU5bxhxgBzON9zRA3klBxRS87Wj3iKHhcTf9G3wpwF2PxS6k4fdGf1XhtlQ==
+"@bazel/jasmine@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-5.0.2.tgz#b32223b479ca7765a985fefb0e45838d723165c9"
+  integrity sha512-zuMXdCMbDfQIZCw9K/l3VbRlWcjgYwIr5lI+hdojCvATGfvBqFQPD+TUCLOIxpHzQeuQ6otxEDK2yBRvLLfdUg==
   dependencies:
     c8 "~7.5.0"
     jasmine-reporters "~2.5.0"
@@ -1249,17 +1358,17 @@
   resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-5.0.0.tgz#ea77a607dc4b85abc29a05cd9215a4bdb68cb977"
   integrity sha512-teNMDzpkXGytdby/TuBoApn0WLVFlBfz4WudFqf9IuEMMvtis+z69OgHlFkSSOs4UGsnWMCk4IoApla49ZKkug==
 
-"@bazel/protractor@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-5.0.1.tgz#e5ee0171e688b56446016141d8c6cd055b82ef00"
-  integrity sha512-PN5ayJPjLnWqErfK/pFgk+eh48ZqcKsS3WG+XWp+VhithNtfSl1POnO0X91tUfYrWowPiilAG9inrpAbbQzh6Q==
+"@bazel/protractor@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-5.0.2.tgz#19320a339578243019b08caefe7f27e530df83a3"
+  integrity sha512-ggqnjJ1q9hVh3SlHxjJSrkOulIAWstwyQzGWtwVIM23UTmY0bqX/X2pmOjGXCrQmU+Rr5GB1fIGVnCxc9Pt4Gw==
 
-"@bazel/rollup@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-5.0.1.tgz#6661d4bff58788687ddb8ddaafa1890ed728c892"
-  integrity sha512-lJ6EbnrB1vWkrKSLK3JawM8gyXQpf2KjxpTLODHb0omaBeT/q7AeQ15Ea7GMApWenTEc7qTWRbZmoc+RxDN5oQ==
+"@bazel/rollup@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-5.0.2.tgz#26f686867bc08503146c7ce95189ee6d1bbe2e23"
+  integrity sha512-fd7AGn+lGA2z7Z4moj+Dtie6H6UwoeD1xhawmZpEuSJoBdp7Ic8Sp7E+6ziP+DAmEfngl+L2Kz6Iwok1g8VtMQ==
   dependencies:
-    "@bazel/worker" "5.0.1"
+    "@bazel/worker" "5.0.2"
 
 "@bazel/runfiles@5.0.0":
   version "5.0.0"
@@ -1276,10 +1385,10 @@
   resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-5.0.0.tgz#12aff6a9e0a75cbaed566337f9246546d59e7103"
   integrity sha512-C1LMoHF91fqCx3srj/omT60IU0SSuCbeR0G2c0Ebjsh1YIIJyAk/ae+zchyygNtgFk7xxQ3Z0CfTS6g8Q87OZQ==
 
-"@bazel/terser@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-5.0.1.tgz#5778d69fd588c5f47ae981c776e2a96867fa1509"
-  integrity sha512-b/RBdx2iVffxaEFqYjlaWQ0zkaG45pBZH4B5dbdOfHR/cxsICx6n3amIjziOjsIS/6PxXIgduxcTJkXh/TYchg==
+"@bazel/terser@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-5.0.2.tgz#732c4259d8d1c15413d988434591aa8368767114"
+  integrity sha512-fOcLwG065KGufi+c67V7xThAIpbZt93lDYsVyWVdxeYIFZ/1ZO7AIN0tkdcwQXM42rslmmGhK/N3RrfDVuOWoA==
 
 "@bazel/typescript@5.0.0":
   version "5.0.0"
@@ -1292,12 +1401,12 @@
     source-map-support "0.5.9"
     tsutils "3.21.0"
 
-"@bazel/typescript@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-5.0.1.tgz#13b7656d962ce61ce84fe241183f079ecd44f18e"
-  integrity sha512-MgydwxNQ8VyvbWuME4fC4KSEmmEyS2z1XW/rYeCPKJrxXOIwJJbD0jvaK1rNmOc2IeJ5Uu7UnyGxtSbSGYGpRg==
+"@bazel/typescript@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-5.0.2.tgz#4c20dea5b47672d3a1bf9492a32c7471719f5821"
+  integrity sha512-9tbVfDBJ9VHtE0dJZ0TIz2t/OvsWUtFLkOJXcTJUvCkgpn3kKbqhok4D7/oRi+F1yk24k9/6xdYhf+JTh/tc5w==
   dependencies:
-    "@bazel/worker" "5.0.1"
+    "@bazel/worker" "5.0.2"
     protobufjs "6.8.8"
     semver "5.6.0"
     source-map-support "0.5.9"
@@ -1314,6 +1423,13 @@
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/@bazel/worker/-/worker-5.0.1.tgz#887678529c4ec4398d58b3ab698c94ac836966ce"
   integrity sha512-lxtyTBPSseZQ773KEOOooi9s7V61dAFrabK6GrcPwNc3wq8froTCogzxIBnlGR6wq+qN1RrE6Rd5R2AP+jYEmA==
+  dependencies:
+    google-protobuf "^3.6.1"
+
+"@bazel/worker@5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@bazel/worker/-/worker-5.0.2.tgz#ebe5b67f5b6699d6ab42e6b1ecc0b521b023a177"
+  integrity sha512-WlMsnnpbl9OnTbWDw4FlJbZy1LBklbmbon9lmRTSVr8RCA7iiFfh5yOFZq9YEUxHvZYHS6Uyh0dtjjYf8frykA==
   dependencies:
     google-protobuf "^3.6.1"
 
@@ -1505,6 +1621,11 @@
   version "13.2.0"
   resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.2.0.tgz#9e1b9f66007033cf1fd58345b364773ce090cb10"
   integrity sha512-dQKPsEsST/HSBYtC75E0ARI1zVsW65h/NYzcAwtOd8DKFmlj8EZMqKC4KwcJ/EKlwR1PN12nBZhuQ1HUVH8Vtg==
+
+"@ngtools/webpack@13.2.1":
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/@ngtools/webpack/-/webpack-13.2.1.tgz#20887a22ecde77d3f022f7fdace8aead2e425bab"
+  integrity sha512-NugLJfzp0EFX2Pdbr94bsktE/qniUE6mEgmv3ZkmimPBBHhAd1M73XBx8lesjLh7D3SRecHCjD5yyygF8gNO0g==
 
 "@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3":
   version "2.1.8-no-fsevents.3"
@@ -3816,7 +3937,7 @@ browser-sync@2.27.7:
     ua-parser-js "1.0.2"
     yargs "^15.4.1"
 
-browserslist@^4.12.0, browserslist@^4.14.5, browserslist@^4.17.5, browserslist@^4.19.1, browserslist@^4.9.1:
+browserslist@^4.12.0, browserslist@^4.14.5, browserslist@^4.17.5, browserslist@^4.17.6, browserslist@^4.19.1, browserslist@^4.9.1:
   version "4.19.1"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.19.1.tgz#4ac0435b35ab655896c31d53018b6dd5e9e4c9a3"
   integrity sha512-u2tbbG5PdKRTUoctO3NBD8FQ5HdPh1ZXPHzp1rwaa5jTc+RV9/+RlWiAIKmjRPQF+xbGM9Kklj5bZQFa2s/38A==
@@ -9208,6 +9329,11 @@ jasmine-core@~2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
   integrity sha1-vMl5rh+f0FcB5F5S5l06XWPxok4=
+
+jasmine-core@~3.10.0:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.10.1.tgz#7aa6fa2b834a522315c651a128d940eca553989a"
+  integrity sha512-ooZWSDVAdh79Rrj4/nnfklL3NQVra0BcuhcuWoAwwi+znLDoUeH87AFfeX8s+YeYi6xlv5nveRyaA1v7CintfA==
 
 jasmine-reporters@~2.5.0:
   version "2.5.0"
