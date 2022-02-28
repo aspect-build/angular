@@ -5,6 +5,7 @@ module.exports = function processSpecialElements() {
     $runAfter: ['tags-extracted'],
     $runBefore: ['collectPackageContentDocsProcessor'],
     $process(docs) {
+      console.log("processSpecialElements: " + docs.length);
       const moduleDocs = {};
       docs.forEach(doc => {
         if (doc.docType === 'module') {

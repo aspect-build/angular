@@ -21,7 +21,10 @@ const linksPackage = require('../links-package');
 const remarkPackage = require('../remark-package');
 const targetPackage = require('../target-package');
 
-const { PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
+const { IS_BAZEL_BUILD, PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
+
+// const docsOutputPath = process.env.DOCS_OUTPUT_PATH || DOCS_OUTPUT_PATH;
+// console.log("**** docsOutputPath: " + docsOutputPath);
 
 module.exports = new Package('angular-base', [
   gitPackage, jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage, postProcessPackage
@@ -113,6 +116,7 @@ module.exports = new Package('angular-base', [
   })
 
   .config(function(copyContentAssetsProcessor) {
+    console.log(`*** copy images from ${path.resolve(CONTENTS_PATH, 'images')} to ${path.resolve(OUTPUT_PATH, 'images')}`);
     copyContentAssetsProcessor.assetMappings.push(
       { from: path.resolve(CONTENTS_PATH, 'images'), to: path.resolve(OUTPUT_PATH, 'images') }
     );
@@ -136,7 +140,8 @@ module.exports = new Package('angular-base', [
     //  That being said do this only add 500ms onto the ~30sec doc-gen run - so not a huge issue)
     checkAnchorLinksProcessor.ignoredLinks.push({
       test(url) {
-        return (existsSync(resolve(SRC_PATH, url)));
+        // return (existsSync(resolve(SRC_PATH, url)));
+        return (existsSync(resolve(SRC_PATH, url))) || (existsSync(resolve(process.env.OUTPUT_PATH, url)));
       }
     });
     checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
@@ -157,6 +162,7 @@ module.exports = new Package('angular-base', [
 
   .config(function(postProcessHtml, addImageDimensions, autoLinkCode, filterPipes, filterAmbiguousDirectiveAliases, ignoreHttpInUrls, ignoreGenericWords) {
     addImageDimensions.basePath = path.resolve(AIO_PATH, 'src');
+    addImageDimensions.bazelOutPath = process.env.OUTPUT_PATH;
     autoLinkCode.customFilters = [ignoreGenericWords, ignoreHttpInUrls, filterPipes, filterAmbiguousDirectiveAliases];
     autoLinkCode.failOnMissingDocPath = true;
     postProcessHtml.plugins = [

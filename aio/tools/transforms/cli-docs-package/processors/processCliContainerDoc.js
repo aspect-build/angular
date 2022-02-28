@@ -3,6 +3,7 @@ module.exports = function processCliContainerDoc() {
     $runAfter: ['extra-docs-added'],
     $runBefore: ['rendering-docs'],
     $process(docs) {
+      console.log(docs.length);
       const cliDoc = docs.find(doc => doc.id === 'cli/index');
       cliDoc.id = 'cli-container';
       cliDoc.commands = docs.filter(doc => doc.docType === 'cli-command');
