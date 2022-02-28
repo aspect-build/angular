@@ -8,6 +8,7 @@ exports_files([
     "scripts/ci/payload-size.sh",
     "scripts/ci/payload-size.js",
     "package.json",
+    "packages",
 ])
 
 alias(

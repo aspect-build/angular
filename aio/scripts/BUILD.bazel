@@ -12,3 +12,12 @@ nodejs_binary(
     ],
     entry_point = "build-ngsw-config.js",
 )
+
+nodejs_binary(
+    name = "extract-cli-commands",
+    data = [
+        "@aio_npm//canonical-path",
+        "@aio_npm//shelljs",
+    ],
+    entry_point = "extract-cli-commands.js",
+)

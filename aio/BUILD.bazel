@@ -115,3 +115,53 @@ architect_test(
     configuration_env_vars = ["NG_BUILD_CACHE"],
     data = TEST_FILES + TEST_DEPS,
 )
+
+# Extract cli commands for dgeni generation
+npm_package_bin(
+    name = "cli-src",
+    args = [
+        "a517160a2", # Keep tag in sync with package.json script 'extract-cli-command-docs' until flip
+        "$(@D)",
+    ],
+    configuration_env_vars = ["PATH"],  # Need PATH because script invokes yarn
+    output_dir = True,
+    tool = "//aio/scripts:extract-cli-commands",
+)
+
+# Run dgeni generation
+npm_package_bin(
+    name = "dgeni",
+    args = ["./aio/tools/transforms/angular.io-package"],
+    configuration_env_vars = ["PATH"],  # Need PATH for dgeni package that invokes git
+    data = glob([
+        "content/**",
+        "src/assets/**/*",
+        "tools/transforms/**",
+    ]) + [
+        "@aio_npm//css-selector-parser",
+        "@aio_npm//dgeni-packages",
+        "@aio_npm//entities",
+        "@aio_npm//fs-extra",
+        "@aio_npm//hast-util-has-property",
+        "@aio_npm//hast-util-is-element",
+        "@aio_npm//hast-util-to-string",
+        "@aio_npm//ignore",
+        "@aio_npm//image-size",
+        "@aio_npm//json5",
+        "@aio_npm//rehype-slug",
+        "@aio_npm//remark",
+        "@aio_npm//remark-html",
+        "@aio_npm//semver",
+        "@aio_npm//stemmer",
+        "@aio_npm//unist-util-filter",
+        "@aio_npm//unist-util-source",
+        "//:package.json",
+        "//:packages",
+        ":cli-src",
+    ],
+    env = {
+        "BAZEL_DGENI_OUTPUT_PATH": "$(@D)",
+    },
+    output_dir = True,
+    tool = "@aio_npm//dgeni/bin:dgeni",
+)
