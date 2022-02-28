@@ -23,6 +23,9 @@ const targetPackage = require('../target-package');
 
 const { PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
 
+const docsOutputPath = process.env.DOCS_OUTPUT_PATH || DOCS_OUTPUT_PATH;
+console.log("**** docsOutputPath: " + docsOutputPath);
+
 module.exports = new Package('angular-base', [
   gitPackage, jsdocPackage, nunjucksPackage, linksPackage, examplesPackage, targetPackage, remarkPackage, postProcessPackage
 ])
@@ -72,7 +75,7 @@ module.exports = new Package('angular-base', [
   })
 
   // Where do we write the output files?
-  .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = DOCS_OUTPUT_PATH; })
+  .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = docsOutputPath; })
 
   // Target environments
   .config(function(targetEnvironments) {
