@@ -11,8 +11,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "2644a66772938db8d8c760334a252f1687455daa7e188073f2d46283f2f6fbb7",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.6.2/rules_nodejs-4.6.2.tar.gz"],
+    sha256 = "6f15d75f9e99c19d9291ff8e64e4eb594a6b7d25517760a75ad3621a7a48c2df",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/4.7.0/rules_nodejs-4.7.0.tar.gz"],
 )
 
 # The PKG rules are needed to build tar packages for integration tests. The builtin
@@ -29,9 +29,29 @@ http_archive(
 # Fetch Aspect lib for utilities like write_source_files
 http_archive(
     name = "aspect_bazel_lib",
-    sha256 = "5f5f1237601d41d61608ad0b9541614935839232940010f9e62163c3e53dc1b7",
-    strip_prefix = "bazel-lib-0.5.0",
-    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.5.0.tar.gz",
+    sha256 = "4f018d3c685174115188ffb778fca10a3f43f82bbbf0aa63361c1cd02f708dbb",
+    strip_prefix = "bazel-lib-0.5.3",
+    url = "https://github.com/aspect-build/bazel-lib/archive/refs/tags/v0.5.3.tar.gz",
+)
+
+# Download cli source from angular/cli-builds for doc generation.
+CLI_SRC_TAG = "a517160a2"
+
+http_archive(
+    name = "cli_src",
+    build_file_content = """
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "help/**/*.json",
+        "package.json",
+    ]),
+    visibility = ["//visibility:public"],
+)
+""",
+    sha256 = "7bdc978205985ff46a2ce30977c511e70798243d827854a85bf0bbd73e8621c9",
+    strip_prefix = "cli-builds-a517160a2",
+    url = "https://github.com/angular/cli-builds/archive/refs/tags/%s.tar.gz" % CLI_SRC_TAG,
 )
 
 # Check the rules_nodejs version and download npm dependencies
