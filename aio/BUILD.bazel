@@ -153,3 +153,19 @@ npm_package_bin(
     output_dir = True,
     tool = "@aio_npm//dgeni/bin:dgeni",
 )
+
+architect(
+    name = "serve",
+    args = ["site:serve"],
+    # chdir = "aio/serve.sh.runfiles/angular/aio",
+    chdir = package_name(),
+    # chdir = "aio",
+    configuration_env_vars = ["NG_BUILD_CACHE"],
+    data = APPLICATION_FILES + APPLICATION_DEPS,
+    tags = ["ibazel_notify_changes"],  # TODO: What does this do?
+)
+
+# copy_to_directory(
+#     name = "sources",
+#     srcs = APPLICATION_FILES,
+# )
