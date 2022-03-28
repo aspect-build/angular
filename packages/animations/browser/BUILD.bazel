@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "ng_module")
 
 package(default_visibility = ["//visibility:public"])
 
-exports_files(["package.json"])
+exports_files(["package.json", "index.ts"])
 
 ng_module(
     name = "browser",
@@ -15,5 +15,16 @@ ng_module(
     deps = [
         "//packages/animations",
         "//packages/core",
+    ],
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+    ]) + [
+        "//packages/animations/browser/testing:files_for_docgen",
     ],
 )

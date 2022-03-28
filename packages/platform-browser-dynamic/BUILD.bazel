@@ -49,3 +49,14 @@ api_golden_test_npm_package(
     golden_dir = "angular/goldens/public-api/platform-browser-dynamic",
     npm_package = "angular/packages/platform-browser-dynamic/npm_package",
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+    ]) + [
+        "//packages/platform-browser-dynamic/testing:files_for_docgen",
+    ],
+)

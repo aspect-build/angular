@@ -2,6 +2,8 @@ load("//tools:defaults.bzl", "api_golden_test_npm_package", "ng_package", "ts_li
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files(["index.ts"])
+
 ts_library(
     name = "localize",
     srcs = glob(
@@ -44,4 +46,17 @@ api_golden_test_npm_package(
     ],
     golden_dir = "angular/goldens/public-api/localize",
     npm_package = "angular/packages/localize/npm_package",
+)
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+    ]) + [
+        "//packages/localize/init:files_for_docgen",
+        "//packages/localize/src/localize:files_for_docgen",
+        "//packages/localize/src/utils:files_for_docgen",
+    ],
 )

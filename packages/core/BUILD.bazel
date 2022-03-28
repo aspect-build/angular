@@ -114,3 +114,21 @@ api_golden_test(
     entry_point = "angular/packages/core/src/errors.d.ts",
     golden = "angular/goldens/public-api/core/errors.md",
 )
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "*.ts",
+        "src/**/*.ts",
+        "PACKAGE.md",
+        "global/index.ts",
+        "global/PACKAGE.md",
+    ]) + [
+        "//packages/core/testing:files_for_docgen",
+        "//packages/core/src/di/interface:files_for_docgen",
+        "//packages/core/src/interface:files_for_docgen",
+        "//packages/core/src/compiler:files_for_docgen",
+        "//packages/core/src/reflection:files_for_docgen",
+        "//packages/core/src/util:files_for_docgen",
+    ],
+)

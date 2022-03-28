@@ -6,6 +6,7 @@ module.exports = function processSpecialElements() {
     $runBefore: ['collectPackageContentDocsProcessor'],
     $process(docs) {
       const moduleDocs = {};
+
       docs.forEach(doc => {
         if (doc.docType === 'module') {
           moduleDocs[doc.id] = doc;

@@ -34,4 +34,23 @@ ts_config(
 exports_files([
     "license-banner.txt",
     "README.md",
+    "examples",
 ])
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = [
+        "//packages/animations:files_for_docgen",
+        "//packages/core:files_for_docgen",
+        "//packages/common:files_for_docgen",
+        "//packages/elements:files_for_docgen",
+        "//packages/forms:files_for_docgen",
+        "//packages/localize:files_for_docgen",
+        "//packages/platform-browser:files_for_docgen",
+        "//packages/platform-browser-dynamic:files_for_docgen",
+        "//packages/platform-server:files_for_docgen",
+        "//packages/router:files_for_docgen",
+        "//packages/service-worker:files_for_docgen",
+        "//packages/upgrade:files_for_docgen",
+    ]
+)

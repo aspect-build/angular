@@ -50,7 +50,7 @@ filegroup(
 )
 """,
     sha256 = "7bdc978205985ff46a2ce30977c511e70798243d827854a85bf0bbd73e8621c9",
-    strip_prefix = "cli-builds-a517160a2",
+    strip_prefix = "cli-builds-%s" % CLI_SRC_TAG,
     url = "https://github.com/angular/cli-builds/archive/refs/tags/%s.tar.gz" % CLI_SRC_TAG,
 )
 

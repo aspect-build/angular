@@ -27,3 +27,11 @@ tsec_test(
     target = "util",
     tsconfig = "//packages:tsec_config",
 )
+
+
+filegroup(
+    name = "files_for_docgen",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+)
