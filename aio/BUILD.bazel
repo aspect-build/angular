@@ -181,7 +181,7 @@ architect(
     name = "build",
     args = [
         "site:build:stable",
-        "--outputPath=../$(@D)",
+        "--output-path=../$(@D)",
     ],
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
@@ -210,7 +210,7 @@ architect_test(
     name = "e2e",
     args = [
         "site:e2e",
-        "--no-webdriverUpdate",
+        "--no-webdriver-update",
     ],
     chdir = package_name(),
     configuration_env_vars = ["NG_BUILD_CACHE"],
