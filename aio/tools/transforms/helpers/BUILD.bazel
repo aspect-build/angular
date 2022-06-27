@@ -1,6 +1,15 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("@aio_npm//@bazel/jasmine:index.bzl", "jasmine_node_test")
 
+filegroup(
+    name = "files",
+    srcs = [
+        "test-package.js",
+        "utils.js",
+    ],
+    visibility = ["//visibility:public"],
+)
+
 js_library(
     name = "helpers",
     package_name = "helpers",
@@ -8,7 +17,7 @@ js_library(
         "test-package.js",
         "utils.js",
     ],
-    visibility = ["//aio/tools/transforms:__subpackages__"],
+    visibility = ["//aio/tools:__subpackages__"],
     deps = [
         "//:package_json",
         "@aio_npm//canonical-path",
