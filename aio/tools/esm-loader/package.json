@@ -1,0 +1,11 @@
+{
+    "name": "vendored-deps",
+    "private": true,
+    "scripts": {
+        "vendor": "ncc build node_modules/resolve.exports/dist/index.js --minify --out third_party/resolve.exports"
+    },
+    "devDependencies": {
+        "@vercel/ncc": "^0.34.0",
+        "resolve.exports": "^1.1.0"
+    }
+}

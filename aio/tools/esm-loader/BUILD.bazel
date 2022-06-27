@@ -1,0 +1,7 @@
+exports_files(
+    [
+        "esm-loader.mjs",
+        "third_party/resolve.exports/index.js",
+    ],
+    visibility = ["//aio:__subpackages__"],
+)
