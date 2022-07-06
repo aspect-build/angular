@@ -6,6 +6,7 @@ exports_files([
     "LICENSE",
     "karma-js.conf.js",
     "browser-providers.conf.js",
+    ".yarn/releases/yarn-1.22.17.cjs",
     "scripts/ci/bazel-payload-size.sh",
     "scripts/ci/payload-size.sh",
     "scripts/ci/payload-size.js",
@@ -70,5 +71,8 @@ nodejs_binary(
     name = "yarn_vendored",
     data = [".yarn/releases/yarn-1.22.17.cjs"],
     entry_point = ".yarn/releases/yarn-1.22.17.cjs",
-    visibility = ["//integration:__subpackages__"],
+    visibility = [
+        "//aio/tools/examples/shared:__pkg__",
+        "//integration:__subpackages__",
+    ],
 )

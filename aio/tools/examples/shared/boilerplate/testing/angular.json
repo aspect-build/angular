@@ -30,7 +30,8 @@
               "src/styles.css",
               "src/test.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "preserveSymlinks": true
           },
           "configurations": {
             "production": {

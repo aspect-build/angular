@@ -48,8 +48,9 @@
             "styles": ["src/styles.css"],
             "scripts": [],
             // #docregion missing-translation-error
-            "i18nMissingTranslation": "error"
+            "i18nMissingTranslation": "error",
             // #docregion build-localize-true, build-production-french
+            "preserveSymlinks": true
           },
           // #enddocregion build-localize-true, missing-translation-error
           // #docregion build-single-locale

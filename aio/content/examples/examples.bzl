@@ -1,5 +1,6 @@
 load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+load("//aio/tools:defaults.bzl", "nodejs_test")
 
 # This map controls which examples are included and whether or not to generate
 # a stackblitz live examples and zip archives. Keys are the example name, and values
@@ -96,11 +97,12 @@ EXAMPLES = {
     "what-is-angular": {"stackblitz": True, "zip": True},
 }
 
-def docs_example(name):
+def docs_example(name, test_tags = []):
     """Stamp targets for adding boilerplate to examples, creating live examples, and creating zips.
 
     Args:
         name: name of the example
+        test_tags: tags to add to e2e tests
     """
     if name not in EXAMPLES:
         # buildifier: disable=print
@@ -119,6 +121,7 @@ def docs_example(name):
         env = {
             "BAZEL_EXAMPLE_BOILERPLATE_OUTPUT_PATH": "$(@D)",
         },
+        data = [":files"],
         output_dir = True,
         tool = "//aio/tools/examples:example-boilerplate",
     )
@@ -134,6 +137,7 @@ def docs_example(name):
         ],
         replace_prefixes = {
             "boilerplate": "",
+            "aio/tools/examples/shared": "",
         },
         allow_overwrites = True,
     )
@@ -169,3 +173,41 @@ def docs_example(name):
             outs = outs,
             tool = "//aio/tools/example-zipper:generate-example-zip",
         )
+
+    if _has_e2e_spec():
+        nodejs_test(
+            name = "e2e",
+            data = [
+                ":%s" % name,
+                "//:.yarn/releases/yarn-1.22.17.cjs",
+                "//aio/tools/examples/shared:node_modules",
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+            ],
+            args = [
+                "$(rootpath :%s)" % name,
+                "$(rootpath //aio/tools/examples/shared:node_modules)",
+                "$(rootpath //:.yarn/releases/yarn-1.22.17.cjs)",
+            ],
+            configuration_env_vars = ["NG_BUILD_CACHE"],
+            entry_point = "//aio/tools/examples:run-example-e2e.mjs",
+            env = {
+                "CHROME_BIN": "$(CHROMIUM)",
+                "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+            },
+            toolchains = [
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+            ],
+            tags = test_tags,
+        )
+        # TODO: stamp test with locally built angular packages
+
+def _has_e2e_spec():
+    SJS_SPEC_FILEPATH = "e2e-spec.ts"
+    CLI_SPEC_FILEPATH = "e2e/src/app.e2e-spec.ts"
+
+    possible_spec_files = native.glob([
+        SJS_SPEC_FILEPATH,
+        CLI_SPEC_FILEPATH,
+    ])
+
+    return len(possible_spec_files) > 0

@@ -1,3 +1,5 @@
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin", "npm_package_bin")
+
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
@@ -7,3 +9,31 @@ filegroup(
         exclude = ["BUILD.bazel"],
     ),
 )
+
+copy_to_bin(
+    name = "package_json",
+    srcs = [
+        "package.json",
+        "yarn.lock",
+    ],
+)
+
+npm_package_bin(
+    name = "node_modules",
+    args = [
+        "--cwd",
+        "$(RULEDIR)",
+        "--frozen-lockfile",
+    ],
+    data = [
+        ":package_json",
+    ],
+    output_dir = True,
+    tool = "//:yarn_vendored",
+)
+
+# TODO: node_modules using locally built angular packages
+# npm_package_bin(
+#     name = "node_modules_local",
+#     ...
+# )
