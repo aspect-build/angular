@@ -7,6 +7,7 @@ import shelljs from 'shelljs';
 import treeKill from 'tree-kill';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers'
+import tar from 'tar';
 
 shelljs.set('-e');
 
@@ -166,7 +167,10 @@ function runProtractorAoT(exampleName, appDir) {
 }
 
 function symlinkNodeModules(examplePath, nodeModulesPath) {
-  fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
+  console.log("*** extracting " + nodeModulesPath);
+  tar.extract({ file: nodeModulesPath, cwd: examplePath, unlink: true, preservePaths: true, sync: true});
+  console.log(JSON.stringify(fs.readdirSync(examplePath)));
+  // fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
 }
 
 // Start the example in appDir; then run protractor with the specified

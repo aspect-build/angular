@@ -5,6 +5,8 @@ const lockfile = require('@yarnpkg/lockfile');
 const path = require('canonical-path');
 const semver = require('semver');
 const shelljs = require('shelljs');
+const tar = require('tar');
+const archiver = require('archiver');
 const yargs = require('yargs');
 
 const PACKAGE_JSON = 'package.json';
@@ -45,7 +47,7 @@ class NgPackagesInstaller {
   /**
    * Install locally built dependencies, overriding the dependencies in the `package.json`.
    */
-  installLocalDependencies() {
+  async installLocalDependencies() {
     // Copy package.json, yarn.lock, and the locally-built packages to a temporary directory
     // to form node_modules.
     //
@@ -122,6 +124,35 @@ class NgPackagesInstaller {
       // We change the name of the node_modules folder manually rather than using yarn's --modules-folder argument because it
       // doesn't work well with invoking .bin executables in yarn scripts (https://github.com/yarnpkg/yarn/issues/8134).
       fs.moveSync(path.join(tempDir, 'node_modules'), path.join(this.outputDir, this.modulesFolder), {overwrite: true});
+
+      console.log("taring...");
+      const start = Number(Date.now());
+  
+      // Method 1: tar (npm)
+      
+      tar.c(
+        { f: path.join(this.outputDir, this.modulesFolder) + '.tar', C: this.outputDir, P: true, sync: true },
+        [this.modulesFolder]
+      );
+
+      // Method 2: archiver (npm)
+
+      // const output = fs.createWriteStream(path.join(this.outputDir, this.modulesFolder) + '.tar');
+      // const archive = archiver('tar');
+      // archive.on('error', function(err) {
+      //   throw err;
+      // });
+      // archive.pipe(output);
+      // archive.directory(path.join(this.outputDir, this.modulesFolder), "node_modules");
+      // await archive.finalize();
+
+      // Method 3: tar.exe (native)
+
+      // shelljs.exec(`tar -cf ${path.join(this.outputDir, this.modulesFolder) + '.tar'} -C ${path.dirname(path.join(this.outputDir, this.modulesFolder))} ${path.basename(this.modulesFolder)}`)
+
+
+      const end = Number(Date.now());
+      console.log("tarred in " + ((end - start) / 1000) + "s");
     } finally {
       fs.rmSync(tempDir, {recursive: true});
     }
@@ -139,6 +170,7 @@ class NgPackagesInstaller {
   _assignPeerDependencies(peerDependencies, dependencies, devDependencies, parsedLockfile) {
     Object.keys(peerDependencies).forEach(key => {
       const peerDepRange = peerDependencies[key];
+
 
       // Ignore peerDependencies whose range is already satisfied by current version in lockfile.
       const originalRange = dependencies[key] || devDependencies[key];
@@ -312,8 +344,8 @@ function main() {
     .option('debug', { describe: 'Print additional debug information.', default: false })
     .option('local-packages', { describe: 'List of locally built packages that should be substituted in place of their npm equivalent.', default: [], array: true })
     .option('modules-folder', { describe: 'Name of the node_modules folder.', default: 'node_modules'})
-    .command('* <outputDir> <packageJson> <yarnLock> [--debug] [--local-packages package1Path package2Path] [--modules-folder node_modules]', 'Install dependencies from the locally built Angular/Zone.js distributables.', () => {}, argv => {
-      createInstaller(argv).installLocalDependencies();
+    .command('* <outputDir> <packageJson> <yarnLock> [--debug] [--local-packages package1Path package2Path] [--modules-folder node_modules]', 'Install dependencies from the locally built Angular/Zone.js distributables.', () => {}, async argv => {
+      await createInstaller(argv).installLocalDependencies();
     })
     .strict()
     .wrap(yargs.terminalWidth())
