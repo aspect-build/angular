@@ -20,9 +20,10 @@ process.env.CHROMEDRIVER_BIN = path.resolve(process.env.CHROMEDRIVER_BIN);
 const {argv} = yargs(hideBin(process.argv));
 
 const EXAMPLE_PATH = path.resolve(argv._[0]);
-const NODE_MODULES_PATH = path.resolve(argv._[1]);
+const NODE_MODULES_PATH = undefined;//path.resolve(argv._[1]);
 const NODE = process.execPath;
-const VENDORED_YARN = path.resolve(argv._[2]);
+// const VENDORED_YARN = path.resolve(argv._[2]);
+const VENDORED_YARN = path.resolve(argv._[1]);
 const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
@@ -40,7 +41,7 @@ async function runE2e(examplePath, nodeModulesPath) {
   const maxAttempts = argv.retry || 1;
   try {
     examplePath = createCopyOfExampleForTest(exampleName, examplePath);
-    symlinkNodeModules(examplePath, nodeModulesPath);
+    await symlinkNodeModules(examplePath, nodeModulesPath);
   
     let testFn;
     if (isSystemJsTest(examplePath)) {
@@ -165,8 +166,12 @@ function runProtractorAoT(exampleName, appDir) {
   return runProtractorSystemJS(exampleName, promise, appDir, aotRunSpawnInfo);
 }
 
-function symlinkNodeModules(examplePath, nodeModulesPath) {
-  fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
+async function symlinkNodeModules(examplePath, nodeModulesPath) {
+  fs.copyFileSync(argv._[3], path.join(examplePath, "yarn.lock"));
+
+  await spawnExt(NODE, [VENDORED_YARN, "install", "--frozen-lockfile", "--mutex", "network"], {cwd: examplePath}, false).promise;
+
+  // fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
 }
 
 // Start the example in appDir; then run protractor with the specified
