@@ -180,33 +180,36 @@ def docs_example(name, test = True, test_tags = []):
         # These node_modules deps are symlinked into each example. These tree
         # artifact folder names must still be "node_modules" despite the symlink
         # being named node_modules. Otherwise, some deps will fail to resolve.
-        node_modules_deps = {
-            "local": "//aio/tools/examples/shared:local/node_modules",
-            "npm": "//aio/tools/examples/shared:node_modules",
-        }
+        # node_modules_deps = {
+        #     "local": "//aio/tools/examples/shared:local/node_modules",
+        #     "npm": "//aio/tools/examples/shared:node_modules",
+        # }
 
-        for [node_modules_source, node_modules_label] in node_modules_deps.items():
-            nodejs_test(
-                name = "e2e_%s" % node_modules_source,
-                data = [
-                    ":%s" % name,
-                    YARN_LABEL,
-                    node_modules_label,
-                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
-                ],
-                args = [
-                    "$(rootpath :%s)" % name,
-                    "$(rootpath %s)" % node_modules_label,
-                    "$(rootpath %s)" % YARN_LABEL,
-                ],
-                configuration_env_vars = ["NG_BUILD_CACHE"],
-                entry_point = "//aio/tools/examples:run-example-e2e",
-                env = {
-                    "CHROME_BIN": "$(CHROMIUM)",
-                    "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
-                },
-                toolchains = [
-                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
-                ],
-                tags = test_tags,
-            )
+        # for [node_modules_source, node_modules_label] in node_modules_deps.items():
+        nodejs_test(
+            # name = "e2e_%s" % node_modules_source,
+            name = "e2e",
+            data = [
+                ":%s" % name,
+                YARN_LABEL,
+                "@aio_examples_npm//:node_modules",
+                # node_modules_label,
+                "@aio_examples_npm//:node_modules/tslib/README.md",
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+            ],
+            args = [
+                "$(rootpath :%s)" % name,
+                "$(rootpath %s)" % "@aio_examples_npm//:node_modules/tslib/README.md",
+                "$(rootpath %s)" % YARN_LABEL,
+            ],
+            configuration_env_vars = ["NG_BUILD_CACHE"],
+            entry_point = "//aio/tools/examples:run-example-e2e",
+            env = {
+                "CHROME_BIN": "$(CHROMIUM)",
+                "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+            },
+            toolchains = [
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+            ],
+            tags = test_tags,
+        )

@@ -2,7 +2,7 @@
   "name": "@angular/forms",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - directives and services for creating forms",
-  "author": "angular",
+  "author": "angular-foobar",
   "license": "MIT",
   "engines": {
     "node": "^14.15.0 || >=16.10.0"

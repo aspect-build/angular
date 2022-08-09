@@ -40,7 +40,8 @@ async function runE2e(examplePath, nodeModulesPath) {
   const maxAttempts = argv.retry || 1;
   try {
     examplePath = createCopyOfExampleForTest(exampleName, examplePath);
-    symlinkNodeModules(examplePath, nodeModulesPath);
+    console.log("9(*(*9*(*(*(8 " + examplePath);
+    await symlinkNodeModules(examplePath, nodeModulesPath);
   
     let testFn;
     if (isSystemJsTest(examplePath)) {
@@ -165,8 +166,51 @@ function runProtractorAoT(exampleName, appDir) {
   return runProtractorSystemJS(exampleName, promise, appDir, aotRunSpawnInfo);
 }
 
-function symlinkNodeModules(examplePath, nodeModulesPath) {
-  fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
+async function symlinkNodeModules(examplePath, nodeModulesPath) {
+  console.log("-_-_-_-_-_-_ " + nodeModulesPath);
+  console.log("-_-_-_-_-_-_ " + path.resolve(path.dirname(nodeModulesPath), ".."));
+  console.log(fs.existsSync(path.resolve(path.dirname(nodeModulesPath), ".."), + "/.bin"));
+
+  fs.ensureSymlinkSync(path.resolve(path.dirname(nodeModulesPath), ".."), path.join(examplePath, 'node_modules'), 'dir');
+  reconstructNodeModulesBinFolder(path.resolve(path.dirname(nodeModulesPath), ".."), path.join(examplePath, 'node_modules'));
+}
+
+function reconstructNodeModulesBinFolder(sourceNodeModules, destNodeModules) {
+  // fs.rmdirSync(path.join(destNodeModules, '.bin'), {recursive: true})
+
+  const packages = globbySync([
+    '@*/*',
+    '!@*$', // Exclude a namespace folder itself
+    '(?!@)*',
+    '!.bin',
+    '!.yarn-integrity',
+    '!_*'
+  ], {cwd: sourceNodeModules, onlyDirectories: true, dot: true});
+
+  fs.mkdirsSync(path.join(destNodeModules, '.bin'))
+
+  packages.forEach(pkg => {
+    const pkg_json = JSON.parse(fs.readFileSync(path.join(sourceNodeModules, pkg, 'package.json'), 'utf-8'));
+
+    if (typeof pkg_json.bin === 'string') {
+        fs.ensureDirSync(path.dirname(path.join(destNodeModules, '.bin', pkg)));
+        fs.writeFileSync(path.join(destNodeModules, '.bin', pkg), `
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+exec node  "$basedir/../${path.join(pkg, pkg_json.bin)}" "$@"
+        `)
+        fs.chmodSync(path.join(destNodeModules, '.bin', pkg), '775')
+    } else if (pkg_json.bin) {
+      Object.entries(pkg_json.bin || {}).forEach(([entry, entryPath]) => {
+          fs.writeFileSync(path.join(destNodeModules, '.bin', entry), `
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+exec node  "$basedir/../${path.join(pkg, entryPath)}" "$@"
+          `)
+          fs.chmodSync(path.join(destNodeModules, '.bin', entry), '775')
+      });
+    }
+  });
 }
 
 // Start the example in appDir; then run protractor with the specified

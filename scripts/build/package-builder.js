@@ -44,7 +44,7 @@ const bazelBin = exec(`${bazelCmd} info bazel-bin`, true);
  * The relative path to the entry script (i.e. the one loaded when the Node.js process launched).
  * It is relative to `baseDir`.
  */
-const scriptPath = relative(baseDir, require.main.filename);
+const scriptPath = relative(baseDir, 'package-builder.js');
 
 module.exports = {
   baseDir,

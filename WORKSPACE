@@ -131,6 +131,7 @@ yarn_install(
     #  1. Missing Windows support currently.
     #  2. Incompatibilites with the `ts_library` rule.
     exports_directories_only = False,
+    frozen_lockfile = False,
     manual_build_file_contents = npm_package_archives(),
     package_json = "//aio:package.json",
     # We prefer to symlink the `node_modules` to only maintain a single install.
@@ -138,6 +139,29 @@ yarn_install(
     symlink_node_modules = True,
     yarn = YARN_LABEL,
     yarn_lock = "//aio:yarn.lock",
+)
+
+yarn_install(
+    name = "aio_examples_npm",
+    # Note that we add the postinstall scripts here so that the dependencies are re-installed
+    # when the postinstall patches are modified.
+    data = [
+        YARN_LABEL,
+        "//:.yarnrc",
+        # "//aio:tools/cli-patches/patch.js",
+    ],
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
+    frozen_lockfile = False,
+    manual_build_file_contents = npm_package_archives(),
+    package_json = "//aio/tools/examples/shared:package.json",
+    # We prefer to symlink the `node_modules` to only maintain a single install.
+    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
+    symlink_node_modules = True,
+    yarn = YARN_LABEL,
+    yarn_lock = "//aio/tools/examples/shared:yarn.lock",
 )
 
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
