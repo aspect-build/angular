@@ -249,7 +249,7 @@ def ng_package(name, readme_md = None, license_banner = None, deps = [], **kwarg
         visibility = visibility,
     )
 
-def pkg_npm(name, use_prodmode_output = False, **kwargs):
+def pkg_npm(name, package_name = None, use_prodmode_output = False, **kwargs):
     """Default values for pkg_npm"""
     visibility = kwargs.pop("visibility", None)
 
@@ -296,7 +296,7 @@ def pkg_npm(name, use_prodmode_output = False, **kwargs):
         # TODO(devversion): consider removing this if `rules_nodejs` allows for duplicate
         # linker mappings where transitive-determined mappings are skipped on conflicts.
         # https://github.com/bazelbuild/rules_nodejs/issues/2810.
-        package_name = None,
+        package_name = package_name,
         validate = False,
         substitutions = select({
             "//:stamp": stamped_substitutions,
