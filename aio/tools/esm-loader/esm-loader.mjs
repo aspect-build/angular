@@ -13,16 +13,25 @@ import {resolve as resolveExports} from '../../../third_party/github.com/lukeed/
   is disabled, not imports in mjs modules.
 */ 
 export async function resolve(specifier, context, defaultResolve) {
+    // console.error("");
+    // console.error("[" + specifier + "]");
     if (!isNodeOrNpmPackageImport(specifier)) {
       return defaultResolve(specifier, context, defaultResolve);
     }
 
-    const nodeModules = path.resolve('external', process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
+    let nodeModules;
+    if (isRunOrTestAction()) {
+      nodeModules = path.resolve('../', process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
+    } else {
+      nodeModules = path.resolve('external', process.env.NODE_MODULES_WORKSPACE_NAME, 'node_modules');
+    }
 
-    const packageImport = parsePackageImport(specifier);
-    const pathToNodeModule = path.join(nodeModules, packageImport.packageName);
+    let packageImport = parsePackageImport(specifier);
+    let pathToNodeModule = path.join(nodeModules, packageImport.packageName);
 
-    const isInternalNodePackage = !fs.existsSync(pathToNodeModule);
+    // console.error(`pathToNodeModule: ${pathToNodeModule}`);
+
+    let isInternalNodePackage = !fs.existsSync(pathToNodeModule);
     if (isInternalNodePackage) {
       return defaultResolve(specifier, context, defaultResolve);
     }
@@ -31,6 +40,8 @@ export async function resolve(specifier, context, defaultResolve) {
 
     const localPackagePath = resolvePackageLocalFilepath(packageImport, packageJson);
     const resolvedFilePath = path.join(pathToNodeModule, localPackagePath);
+
+    // console.error(`resolvedFilePath: ${resolvedFilePath}`);
 
     return {url: pathToFileURL(resolvedFilePath).href};
 }
@@ -53,4 +64,8 @@ function resolvePackageLocalFilepath(packageImport, packageJson) {
     }
 
     return packageImport.pathInPackage || packageJson.module || packageJson.main || 'index.js';
+}
+
+function isRunOrTestAction() {
+  return process.env.TEST_WORKSPACE || process.env.BUILD_WORKSPACE_DIRECTORY;
 }

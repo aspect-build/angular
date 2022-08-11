@@ -2,6 +2,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "npm_package_bin")
 load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
 load("//aio/tools:defaults.bzl", "nodejs_test")
 load("//:yarn.bzl", "YARN_LABEL")
+load("//:packages.bzl", "ALL_PACKAGES", "to_package_label")
 
 # This map controls which examples are included and whether or not to generate
 # a stackblitz live examples and zip archives. Keys are the example name, and values
@@ -177,36 +178,127 @@ def docs_example(name, test = True, test_tags = []):
         )
 
     if test:
-        # These node_modules deps are symlinked into each example. These tree
-        # artifact folder names must still be "node_modules" despite the symlink
-        # being named node_modules. Otherwise, some deps will fail to resolve.
-        node_modules_deps = {
-            "local": "//aio/tools/examples/shared:local/node_modules",
-            "npm": "//aio/tools/examples/shared:node_modules",
-        }
+        # # These node_modules deps are symlinked into each example. These tree
+        # # artifact folder names must still be "node_modules" despite the symlink
+        # # being named node_modules. Otherwise, some deps will fail to resolve.
+        # node_modules_deps = {
+        #     "local": "//aio/tools/examples/shared:local/node_modules",
+        #     "npm": "//aio/tools/examples/shared:node_modules",
+        # }
 
-        for [node_modules_source, node_modules_label] in node_modules_deps.items():
-            nodejs_test(
-                name = "e2e_%s" % node_modules_source,
-                data = [
-                    ":%s" % name,
-                    YARN_LABEL,
-                    node_modules_label,
-                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
-                ],
-                args = [
-                    "$(rootpath :%s)" % name,
-                    "$(rootpath %s)" % node_modules_label,
-                    "$(rootpath %s)" % YARN_LABEL,
-                ],
-                configuration_env_vars = ["NG_BUILD_CACHE"],
-                entry_point = "//aio/tools/examples:run-example-e2e",
-                env = {
-                    "CHROME_BIN": "$(CHROMIUM)",
-                    "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
-                },
-                toolchains = [
-                    "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
-                ],
-                tags = test_tags,
-            )
+        # Keep in sync with aio/tools/examples/shared/package.json
+        TEST_DEPS = [
+            "@angular/animations",
+            "@angular/common",
+            "@angular/compiler",
+            "@angular/core",
+            "@angular/elements",
+            "@angular/forms",
+            "@angular/localize",
+            "@angular/platform-browser",
+            "@angular/platform-browser-dynamic",
+            "@angular/platform-server",
+            "@angular/router",
+            "@angular/service-worker",
+            "@angular/upgrade",
+            "@nguniversal/express-engine",
+            "angular",
+            "angular-in-memory-web-api",
+            "angular-route",
+            "core-js",
+            "express",
+            "rxjs",
+            "systemjs",
+            "systemjs-plugin-babel",
+            "tslib",
+            "zone.js",
+            "@angular-devkit/build-angular",
+            "@angular/cli",
+            "@angular/compiler-cli",
+            "@nguniversal/builders",
+            "@rollup/plugin-commonjs",
+            "@rollup/plugin-node-resolve",
+            "@types/angular",
+            "@types/angular-animate",
+            "@types/angular-mocks",
+            "@types/angular-resource",
+            "@types/angular-route",
+            "@types/express",
+            "@types/jasmine",
+            "@types/jquery",
+            "@types/node",
+            "canonical-path",
+            "concurrently",
+            "copyfiles",
+            "http-server",
+            "jasmine-core",
+            "jasmine-marbles",
+            "jasmine-spec-reporter",
+            "karma",
+            "karma-chrome-launcher",
+            "karma-coverage",
+            "karma-jasmine",
+            "karma-jasmine-html-reporter",
+            "lite-server",
+            "lodash",
+            "protractor",
+            "rimraf",
+            "rollup",
+            "rollup-plugin-terser",
+            "source-map-explorer",
+            "ts-node",
+            "typescript",
+        ]
+
+        TEST_DEPS_ARGS = [(to_package_label(dep) if dep in ALL_PACKAGES else dep) for dep in TEST_DEPS]
+
+        NPM_TEST_DEPS = ["@aio_example_deps//%s" % dep for dep in TEST_DEPS]
+        LOCAL_TEST_DEPS = [to_package_label(dep) if dep in ALL_PACKAGES else ("@aio_example_deps//%s" % dep) for dep in TEST_DEPS]
+
+        NPM_TEST_PKG_DEPS = [_pkg_json_label(dep) for dep in TEST_DEPS]
+        LOCAL_TEST_PKG_DEPS = [(to_package_label(dep) if dep in ALL_PACKAGES else _pkg_json_label(dep)) for dep in TEST_DEPS]
+
+        print(LOCAL_TEST_DEPS)
+
+        # for [node_modules_source, node_modules_label] in node_modules_deps.items():
+        nodejs_test(
+            name = "e2e",  #_%s" % node_modules_source,
+            data = [
+                       ":%s" % name,
+                       YARN_LABEL,
+                       # node_modules_label,
+                       "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium",
+                       "//aio/tools/examples:run-example-e2e",
+                   ] +
+                   # select({
+                   #     "//aio:aio_local_deps": LOCAL_TEST_PKG_DEPS,
+                   #     "//conditions:default": NPM_TEST_PKG_DEPS,
+                   # }) +
+                   select({
+                       "//aio:aio_local_deps": LOCAL_TEST_DEPS,
+                       "//conditions:default": NPM_TEST_DEPS,
+                   }),
+            args = [
+                "$(rootpath :%s)" % name,
+                # "$(rootpath %s)" % node_modules_label,
+                "$(rootpath %s)" % YARN_LABEL,
+            ] + TEST_DEPS_ARGS,
+            #  + select({
+            #     "//aio:aio_local_deps": ["$(rootpath %s)" % dep for dep in LOCAL_TEST_PKG_DEPS],
+            #     "//conditions:default": ["$(rootpath %s)" % dep for dep in NPM_TEST_PKG_DEPS],
+            # }),
+            configuration_env_vars = ["NG_BUILD_CACHE"],
+            entry_point = "//aio/tools/examples:run-example-e2e",
+            env = {
+                "CHROME_BIN": "$(CHROMIUM)",
+                "CHROMEDRIVER_BIN": "$(CHROMEDRIVER)",
+            },
+            templated_args = ["--node_options=--experimental-import-meta-resolve"],
+            toolchains = [
+                "@aio_npm//@angular/dev-infra-private/bazel/browsers/chromium:toolchain_alias",
+            ],
+            tags = test_tags,
+        )
+
+def _pkg_json_label(pkg):
+    return "@aio_example_deps//:node_modules/%s/package.json" % pkg

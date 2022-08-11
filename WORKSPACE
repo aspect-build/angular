@@ -136,6 +136,27 @@ yarn_install(
     yarn_lock = "//aio:yarn.lock",
 )
 
+yarn_install(
+    name = "aio_example_deps",
+    # Note that we add the postinstall scripts here so that the dependencies are re-installed
+    # when the postinstall patches are modified.
+    data = [
+        YARN_LABEL,
+        "//:.yarnrc",
+    ],
+    # Currently disabled due to:
+    #  1. Missing Windows support currently.
+    #  2. Incompatibilites with the `ts_library` rule.
+    exports_directories_only = False,
+    manual_build_file_contents = npm_package_archives(),
+    package_json = "//aio/tools/examples/shared:package.json",
+    # We prefer to symlink the `node_modules` to only maintain a single install.
+    # See https://github.com/angular/dev-infra/pull/446#issuecomment-1059820287 for details.
+    symlink_node_modules = True,
+    yarn = YARN_LABEL,
+    yarn_lock = "//aio/tools/examples/shared:yarn.lock",
+)
+
 load("@aspect_bazel_lib//lib:repositories.bzl", "aspect_bazel_lib_dependencies")
 
 aspect_bazel_lib_dependencies()
@@ -185,10 +206,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "c0b0cd75596e80b32dc9804a394a3d022af8ff660024e9c61a2268e659f38d49",
-    strip_prefix = "rules_sass-1.52.3",
+    sha256 = "5f7cf18e3359ef8c66bb8a01b012aa21d0ed1a86e0aa2cc2504215ed2bb2e44a",
+    strip_prefix = "rules_sass-1.54.4",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.52.3.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.54.4.zip",
     ],
 )
 

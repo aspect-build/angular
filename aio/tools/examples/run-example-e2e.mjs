@@ -1,7 +1,7 @@
 import path from 'canonical-path';
 import {spawn} from 'cross-spawn';
 import fs from 'fs-extra';
-import {sync as globbySync} from 'globby';
+import {globbySync} from 'globby';
 import os from 'os';
 import shelljs from 'shelljs';
 import treeKill from 'tree-kill';
@@ -20,14 +20,16 @@ process.env.CHROMEDRIVER_BIN = path.resolve(process.env.CHROMEDRIVER_BIN);
 const {argv} = yargs(hideBin(process.argv));
 
 const EXAMPLE_PATH = path.resolve(argv._[0]);
-const NODE_MODULES_PATH = path.resolve(argv._[1]);
+const NODE_MODULES_PATH = "";//path.resolve(argv._[1]);
 const NODE = process.execPath;
-const VENDORED_YARN = path.resolve(argv._[2]);
+const VENDORED_YARN = path.resolve(argv._[1]);
 const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const MAX_NO_OUTPUT_TIMEOUT = 1000 * 60 * 5;  // 5 minutes
 
+const PACKAGES = process.argv.slice(4);
+// console.log(PACKAGES);
 /**
  * Run Protractor End-to-End Tests for Doc Samples
  *
@@ -36,11 +38,15 @@ const MAX_NO_OUTPUT_TIMEOUT = 1000 * 60 * 5;  // 5 minutes
  *    e.g. --retry 3  // To try each test up to 3 times.
  */
 async function runE2e(examplePath, nodeModulesPath) {
+  // console.log(await import.meta.resolve("@angular/core"));
+  // console.log(await import.meta.resolve("cross-spawn"))
+
   const exampleName = path.basename(examplePath);
   const maxAttempts = argv.retry || 1;
   try {
     examplePath = createCopyOfExampleForTest(exampleName, examplePath);
-    symlinkNodeModules(examplePath, nodeModulesPath);
+    console.log(`*** EXAMPLE PATH ${examplePath} ***`);
+    constructNodeModules(examplePath, nodeModulesPath);
   
     let testFn;
     if (isSystemJsTest(examplePath)) {
@@ -56,7 +62,7 @@ async function runE2e(examplePath, nodeModulesPath) {
     console.error(e);
     process.exitCode = 1;
   } finally {
-    fs.rmSync(examplePath, {recursive: true, force: true});
+    // fs.rmSync(examplePath, {recursive: true, force: true});
   }
 }
 
@@ -165,8 +171,82 @@ function runProtractorAoT(exampleName, appDir) {
   return runProtractorSystemJS(exampleName, promise, appDir, aotRunSpawnInfo);
 }
 
-function symlinkNodeModules(examplePath, nodeModulesPath) {
-  fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
+function constructNodeModules(examplePath, nodeModulesPath) {
+  fs.ensureDirSync(path.join(examplePath, 'node_modules'));
+  console.log(PACKAGES);
+  PACKAGES.forEach(pkgRunfilesPath => {
+    let pkgPath;
+    console.log();
+    if (pkgRunfilesPath.startsWith("//")) {
+      console.log("local")
+      pkgPath = pkgRunfilesPath.substring(2).replace(":", "/");
+    } else {
+      console.log("npm")
+      pkgPath = path.join("..", "aio_example_deps", "node_modules", pkgRunfilesPath);
+    }
+    console.log(pkgPath);
+    // if (pkgRunfilesPath.endsWith("package.json")) {
+    //   pkgPath = path.dirname(pkgRunfilesPath);
+    // } else if (pkgRunfilesPath.endsWith("npm_package")) {
+    //   pkgPath = pkgRunfilesPath;
+    // } else {
+    //   throw new Error(`Unrecognized package runfiles path: ${pkgRunfilesPath}`);
+    // }
+    // console.log(pkgPath);
+
+    // TODO: optimize
+    const pkgName = JSON.parse(fs.readFileSync(path.join(pkgPath, "package.json"), {encoding: "utf-8"})).name;
+    // const pkgName = pkgRunfilesPath;
+    console.log(pkgName);
+    // process.exit(1);
+
+
+    fs.ensureSymlinkSync(pkgPath, path.join(examplePath, 'node_modules', pkgName))
+  });
+  // console.log(fs.readdirSync(path.join(examplePath, 'node_modules')));
+
+  constructNodeModulesBinFolder(path.join(examplePath, 'node_modules'), path.join(examplePath, 'node_modules'));
+  // console.log(fs.readdirSync(path.join(examplePath, 'node_modules', ".bin")));
+
+  // fs.ensureSymlinkSync(nodeModulesPath, path.join(examplePath, 'node_modules'), 'dir');
+}
+
+function constructNodeModulesBinFolder(sourceNodeModules, destNodeModules) {
+  // fs.rmdirSync(path.join(destNodeModules, '.bin'), {recursive: true})
+
+  const packages = globbySync([
+    '@*/*',
+    '!@*$', // Exclude a namespace folder itself
+    '(?!@)*',
+    '!.bin',
+    '!.yarn-integrity',
+    '!_*'
+  ], {cwd: sourceNodeModules, onlyDirectories: true, dot: true});
+
+  fs.mkdirsSync(path.join(destNodeModules, '.bin'))
+
+  packages.forEach(pkg => {
+    const pkg_json = JSON.parse(fs.readFileSync(path.join(sourceNodeModules, pkg, 'package.json'), 'utf-8'));
+
+    if (typeof pkg_json.bin === 'string') {
+        fs.ensureDirSync(path.dirname(path.join(destNodeModules, '.bin', pkg)));
+        fs.writeFileSync(path.join(destNodeModules, '.bin', pkg), `
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+exec node  "$basedir/../${path.join(pkg, pkg_json.bin)}" "$@"
+        `)
+        fs.chmodSync(path.join(destNodeModules, '.bin', pkg), '775')
+    } else if (pkg_json.bin) {
+      Object.entries(pkg_json.bin || {}).forEach(([entry, entryPath]) => {
+          fs.writeFileSync(path.join(destNodeModules, '.bin', entry), `
+#!/bin/sh
+basedir=$(dirname "$(echo "$0" | sed -e 's,\\\\,/,g')")
+exec node  "$basedir/../${path.join(pkg, entryPath)}" "$@"
+          `)
+          fs.chmodSync(path.join(destNodeModules, '.bin', entry), '775')
+      });
+    }
+  });
 }
 
 // Start the example in appDir; then run protractor with the specified
@@ -187,6 +267,10 @@ function runE2eTestsCLI(exampleName, appDir) {
       }
     }
   }
+
+  const angular_json = JSON.parse(fs.readFileSync(path.join(appDir, "angular.json"), {encoding: "utf-8"}));
+  angular_json.projects["angular.io-example"].architect.build.options.preserveSymlinks = true;
+  fs.writeFileSync(path.join(appDir, "angular.json"), JSON.stringify(angular_json));
 
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const testCommands = config.tests || [{
