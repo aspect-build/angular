@@ -184,6 +184,8 @@ architect(
         "//conditions:default": APPLICATION_DEPS,
     }),
     output_dir = True,
+    # AIO build makes a network call to download fonts so it requires network access
+    tags = ["requires-network"],
 )
 
 architect_test(
@@ -208,6 +210,7 @@ architect_test(
 
 architect_test(
     name = "e2e",
+    size = "large",
     args = [
         "site:e2e",
         "--no-webdriver-update",

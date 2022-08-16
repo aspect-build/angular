@@ -106,15 +106,19 @@ build:remote --host_cpu=k8
 # Toolchain and platform related flags
 build:remote --crosstool_top=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain_suite
 build:remote --extra_toolchains=@npm//@angular/dev-infra-private/bazel/remote-execution/cpp:cc_toolchain
-build:remote --extra_execution_platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
-build:remote --host_platform=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
-build:remote --platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform
+build:remote --extra_execution_platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
+build:remote --host_platform=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
+build:remote --platforms=@npm//@angular/dev-infra-private/bazel/remote-execution:platform_with_network
 
 # Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/primary_instance
 build:remote --project_id=internal-200822
 build:remote --remote_cache=remotebuildexecution.googleapis.com
 build:remote --remote_executor=remotebuildexecution.googleapis.com
+
+# Ensure that tags like "no-remote-exec" get propagated to actions created by rules.
+# https://bazel.build/reference/command-line-reference#flag--experimental_allow_tags_propagation
+build:remote --experimental_allow_tags_propagation
 
 ##################################
 # Saucelabs tests settings       #
