@@ -91,6 +91,7 @@ APPLICATION_FILES = [
     "tsconfig.worker.json",
     "//aio/src/assets",
     "//aio/src/assets/js",
+    "//third_party/fonts.google.com/roboto",
     ":dgeni",
     ":stackblitz",
     ":example-zips",
