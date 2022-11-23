@@ -717,61 +717,61 @@ workflows:
           filters:
             branches:
               ignore: g3
-      - lint:
-          requires:
-            - setup
-      - test:
-          requires:
-            - setup
-      - build-npm-packages:
-          requires:
-            - setup
-      - legacy-unit-tests-saucelabs:
-          requires:
-            - setup
-      - test_aio:
-          requires:
-            - setup
+      # - lint:
+      #     requires:
+      #       - setup
+      # - test:
+      #     requires:
+      #       - setup
+      # - build-npm-packages:
+      #     requires:
+      #       - setup
+      # - legacy-unit-tests-saucelabs:
+      #     requires:
+      #       - setup
+      # - test_aio:
+      #     requires:
+      #       - setup
       - deploy_aio:
           requires:
-            - test_aio
+            # - test_aio
       - test_aio_local:
           requires:
             - setup
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          <<: *only_on_pull_requests
-          requires:
-            - setup
-      - test_aio_preview:
-          requires:
-            - aio_preview
-      - publish_packages_as_artifacts:
-          requires:
-            - build-npm-packages
-      - publish_snapshot:
-          <<: *only_release_branches
-          requires:
-            # Only publish if tests and integration tests pass
-            - test
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-npm-packages
-            - legacy-unit-tests-saucelabs
-      - components-repo-unit-tests:
-          requires:
-            - build-npm-packages
-      - test_zonejs:
-          requires:
-            - setup
-      - test_win:
-          requires:
-            - setup
-      - test_angular_devtools:
-          requires:
-            - setup
+      # - aio_preview:
+      #     # Only run on PR builds. (There can be no previews for non-PR builds.)
+      #     <<: *only_on_pull_requests
+      #     requires:
+      #       - setup
+      # - test_aio_preview:
+      #     requires:
+      #       - aio_preview
+      # - publish_packages_as_artifacts:
+      #     requires:
+      #       - build-npm-packages
+      # - publish_snapshot:
+      #     <<: *only_release_branches
+      #     requires:
+      #       # Only publish if tests and integration tests pass
+      #       - test
+      #       # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
+      #       - test_aio_local
+      #       # Get the artifacts to publish from the build-packages-dist job
+      #       # since the publishing script expects the legacy outputs layout.
+      #       - build-npm-packages
+      #       - legacy-unit-tests-saucelabs
+      # - components-repo-unit-tests:
+      #     requires:
+      #       - build-npm-packages
+      # - test_zonejs:
+      #     requires:
+      #       - setup
+      # - test_win:
+      #     requires:
+      #       - setup
+      # - test_angular_devtools:
+      #     requires:
+      #       - setup
 
   monitoring:
     jobs:
