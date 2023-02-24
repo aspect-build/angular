@@ -124,6 +124,16 @@ describe('standalone migration', () => {
       }
     `);
 
+    writeFile('/node_modules/@angular/common/http/index.d.ts', `
+      import {ModuleWithProviders} from '@angular/core';
+
+      export declare class HttpClientModule {
+          static ɵfac: i0.ɵɵFactoryDeclaration<HttpClientModule, never>;
+          static ɵmod: i0.ɵɵNgModuleDeclaration<HttpClientModule, never, never, never>;
+          static ɵinj: i0.ɵɵInjectorDeclaration<HttpClientModule>;
+      }
+    `);
+
     writeFile('/node_modules/@angular/core/testing/index.d.ts', `
       export declare class TestBed {
         static configureTestingModule(config: any): any;
@@ -1274,6 +1284,82 @@ describe('standalone migration', () => {
     `));
   });
 
+  it('should not copy over the NoopAnimationsModule into the imports of a test component',
+     async () => {
+       writeFile('app.spec.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {TestBed} from '@angular/core/testing';
+          import {MatCardModule} from '@angular/material/card';
+          import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+
+          describe('bootstrapping an app', () => {
+            it('should work', () => {
+              TestBed.configureTestingModule({
+                imports: [MatCardModule, NoopAnimationsModule],
+                declarations: [App]
+              });
+              const fixture = TestBed.createComponent(App);
+              expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+            });
+          });
+
+          @Component({template: 'hello'})
+          class App {}
+        `);
+
+       await runMigration('convert-to-standalone');
+
+       const content = stripWhitespace(tree.readContent('app.spec.ts'));
+
+       expect(content).toContain(stripWhitespace(`
+          TestBed.configureTestingModule({
+            imports: [MatCardModule, NoopAnimationsModule, App]
+          });
+        `));
+       expect(content).toContain(stripWhitespace(`
+          @Component({template: 'hello', standalone: true, imports: [MatCardModule]})
+          class App {}
+        `));
+     });
+
+  it('should not copy over the BrowserAnimationsModule into the imports of a test component',
+     async () => {
+       writeFile('app.spec.ts', `
+          import {NgModule, Component} from '@angular/core';
+          import {TestBed} from '@angular/core/testing';
+          import {MatCardModule} from '@angular/material/card';
+          import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+          describe('bootstrapping an app', () => {
+            it('should work', () => {
+              TestBed.configureTestingModule({
+                imports: [MatCardModule, BrowserAnimationsModule],
+                declarations: [App]
+              });
+              const fixture = TestBed.createComponent(App);
+              expect(fixture.nativeElement.innerHTML).toBe('<hello>Hello</hello>');
+            });
+          });
+
+          @Component({template: 'hello'})
+          class App {}
+        `);
+
+       await runMigration('convert-to-standalone');
+
+       const content = stripWhitespace(tree.readContent('app.spec.ts'));
+
+       expect(content).toContain(stripWhitespace(`
+          TestBed.configureTestingModule({
+            imports: [MatCardModule, BrowserAnimationsModule, App]
+          });
+        `));
+       expect(content).toContain(stripWhitespace(`
+          @Component({template: 'hello', standalone: true, imports: [MatCardModule]})
+          class App {}
+        `));
+     });
+
   it('should not move declarations that are not being migrated out of the declarations array',
      async () => {
        const appComponentContent = `
@@ -1523,6 +1609,51 @@ describe('standalone migration', () => {
       /** Module used for testing. */
       @NgModule({imports: [MyDir]})
       export class Mod {}
+    `));
+  });
+
+  it('should use the generated alias if a conflicting symbol already exists', async () => {
+    writeFile('module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+      import {MyButton} from './button';
+
+      @NgModule({declarations: [MyComp, MyButton], exports: [MyComp]})
+      export class Mod {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+      import {MyButton} from '@external/button';
+
+      MyButton.sayHello();
+
+      @Component({selector: 'my-comp', template: '<my-button>Hello</my-button>'})
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>'})
+      export class MyButton {}
+    `);
+
+    await runMigration('convert-to-standalone');
+
+    expect(stripWhitespace(tree.readContent('comp.ts'))).toBe(stripWhitespace(`
+      import {Component} from '@angular/core';
+      import {MyButton} from '@external/button';
+      import {MyButton as MyButton_1} from './button';
+
+      MyButton.sayHello();
+
+      @Component({
+        selector: 'my-comp', template: '<my-button>Hello</my-button>',
+        standalone: true,
+        imports: [MyButton_1]
+      })
+      export class MyComp {}
     `));
   });
 
@@ -2113,6 +2244,122 @@ describe('standalone migration', () => {
       export {MyButton} from './button';
     `));
   });
+
+  it('should remove barrel export if the corresponding file is deleted', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyComp} from './comp';
+
+      @NgModule({imports: [MyComp]})
+      export class AppModule {}
+    `);
+
+    writeFile('button.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyButton} from './button';
+
+      @NgModule({imports: [MyButton], exports: [MyButton]})
+      export class ButtonModule {}
+    `);
+
+    writeFile('comp.ts', `
+      import {Component} from '@angular/core';
+      import {MyButton} from './button';
+
+      @Component({
+        selector: 'my-comp',
+        template: '<my-button>Hello</my-button>',
+        standalone: true,
+        imports: [MyButton]
+      })
+      export class MyComp {}
+    `);
+
+    writeFile('button.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({selector: 'my-button', template: '<ng-content></ng-content>', standalone: true})
+      export class MyButton {}
+    `);
+
+    writeFile('index.ts', `
+      export * from './app.module';
+      export {MyComp} from './comp';
+      export {ButtonModule} from './button.module';
+    `);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('app.module.ts')).toBe(false);
+    expect(tree.exists('button.module.ts')).toBe(false);
+    expect(stripWhitespace(tree.readContent('index.ts'))).toBe(stripWhitespace(`
+      export {MyComp} from './comp';
+    `));
+  });
+
+  it('should remove barrel files referring to other barrel files that were deleted', async () => {
+    writeFile('app.module.ts', `
+      import {NgModule} from '@angular/core';
+      import {MyDir} from './dir';
+
+      @NgModule({imports: [MyDir]})
+      export class AppModule {}
+    `);
+
+    writeFile('dir.ts', `
+      import {Directive} from '@angular/core';
+
+      @Directive({selector: '[dir]', standalone: true})
+      export class MyDir {}
+    `);
+
+    writeFile('index.ts', `export * from './app.module';`);
+    writeFile('index-2.ts', `export * from './index';`);
+    writeFile('index-3.ts', `export * from './index-2';`);
+
+    await runMigration('prune-ng-modules');
+
+    expect(tree.exists('index.ts')).toBe(false);
+    expect(tree.exists('index-2.ts')).toBe(false);
+    expect(tree.exists('index-3.ts')).toBe(false);
+  });
+
+  it('should not delete dependent barrel files if they have some barrel exports that will not be removed',
+     async () => {
+       writeFile('app.module.ts', `
+        import {NgModule} from '@angular/core';
+        import {MyDir} from './dir';
+
+        @NgModule({imports: [MyDir]})
+        export class AppModule {}
+      `);
+
+       writeFile('dir.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({selector: '[dir]', standalone: true})
+        export class MyDir {}
+      `);
+
+       writeFile('utils.ts', `
+        export function sum(a: number, b: number) { return a + b; }
+      `);
+
+       writeFile('index.ts', `export * from './app.module';`);
+       writeFile('index-2.ts', `
+        export * from './index';
+        export * from './utils';
+      `);
+       writeFile('index-3.ts', `export * from './index-2';`);
+
+       await runMigration('prune-ng-modules');
+
+       expect(tree.exists('index.ts')).toBe(false);
+       expect(stripWhitespace(tree.readContent('index-2.ts')))
+           .toBe(stripWhitespace(`export * from './utils';`));
+       expect(stripWhitespace(tree.readContent('index-3.ts')))
+           .toBe(stripWhitespace(`export * from './index-2';`));
+     });
 
   it('should add a comment to locations that cannot be removed automatically', async () => {
     writeFile('app.module.ts', `
@@ -3271,6 +3518,43 @@ describe('standalone migration', () => {
       }).catch(e => console.error(e));
     `));
   });
+
+  it('should convert HttpClientModule references to provideHttpClient(withInterceptorsFromDi())',
+     async () => {
+       writeFile('main.ts', `
+      import {AppModule} from './app/app.module';
+      import {platformBrowser} from '@angular/platform-browser';
+
+      platformBrowser().bootstrapModule(AppModule).catch(e => console.error(e));
+    `);
+
+       writeFile('./app/app.module.ts', `
+      import {NgModule, Component} from '@angular/core';
+      import {HttpClientModule} from '@angular/common/http';
+
+      @Component({template: 'hello'})
+      export class AppComponent {}
+
+      @NgModule({
+        declarations: [AppComponent],
+        bootstrap: [AppComponent],
+        imports: [HttpClientModule]
+      })
+      export class AppModule {}
+    `);
+
+       await runMigration('standalone-bootstrap');
+
+       expect(stripWhitespace(tree.readContent('main.ts'))).toBe(stripWhitespace(`
+      import {AppComponent} from './app/app.module';
+      import {platformBrowser, bootstrapApplication} from '@angular/platform-browser';
+      import {withInterceptorsFromDi, provideHttpClient} from '@angular/common/http';
+
+      bootstrapApplication(AppComponent, {
+        providers: [provideHttpClient(withInterceptorsFromDi())]
+      }).catch(e => console.error(e));
+    `));
+     });
 
   it('should omit standalone directives from the imports array from the importProvidersFrom call',
      async () => {

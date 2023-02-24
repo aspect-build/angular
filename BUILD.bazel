@@ -1,4 +1,5 @@
 load("//tools:defaults.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library")
 load("//:yarn.bzl", "YARN_PATH")
 
 package(default_visibility = ["//visibility:public"])
@@ -24,6 +25,14 @@ filegroup(
 alias(
     name = "tsconfig.json",
     actual = "//packages:tsconfig-build.json",
+)
+
+js_library(
+    name = "browser-providers",
+    srcs = [
+        "browser-providers.conf.js",
+        "browser-providers.conf.d.ts",
+    ],
 )
 
 filegroup(
@@ -60,4 +69,12 @@ nodejs_binary(
         "//aio/tools/examples/shared:__pkg__",
         "//integration:__subpackages__",
     ],
+)
+
+alias(
+    name = "sauce_connect",
+    actual = select({
+        "@bazel_tools//src/conditions:linux": "@sauce_connect//:bin/sc",
+        "@bazel_tools//src/conditions:darwin": "@sauce_connect_mac//:bin/sc",
+    }),
 )

@@ -192,10 +192,10 @@ cldr_xml_data_repository(
 # sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "cb2c1e972f6ee57f6c824a336016bd20627b9581d979969ac0dd7a73f7cb27ad",
-    strip_prefix = "rules_sass-a2efcd672812366130ecd27ca91a011fa2b5a726",
+    sha256 = "78efa335c53253ed5c2b731bce8e654922c92f9f49337f9ee63b275c61989b33",
+    strip_prefix = "rules_sass-1f277900101a3d057392df55b2d6f332df34087a",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/a2efcd672812366130ecd27ca91a011fa2b5a726.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1f277900101a3d057392df55b2d6f332df34087a.zip",
     ],
 )
 
@@ -212,4 +212,21 @@ register_toolchains(
     "@npm//@angular/build-tooling/bazel/git-toolchain:git_macos_x86_toolchain",
     "@npm//@angular/build-tooling/bazel/git-toolchain:git_macos_arm64_toolchain",
     "@npm//@angular/build-tooling/bazel/git-toolchain:git_windows_toolchain",
+)
+
+# Fetch sauce connect (tool to open Saucelabs tunnel for Saucelabs browser tests)
+http_archive(
+    name = "sauce_connect",
+    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
+    sha256 = "26b9c3630f441b47854b6032f7eca6f1d88d3f62e50ee44c27015d71a5155c36",
+    strip_prefix = "sc-4.8.2-linux",
+    url = "https://saucelabs.com/downloads/sc-4.8.2-linux.tar.gz",
+)
+
+http_archive(
+    name = "sauce_connect_mac",
+    build_file_content = """exports_files(["bin/sc"], visibility = ["//visibility:public"])""",
+    sha256 = "28277ce81ef9ab84f5b87b526258920a8ead44789a5034346e872629bbf38089",
+    strip_prefix = "sc-4.8.2-osx",
+    url = "https://saucelabs.com/downloads/sc-4.8.2-osx.zip",
 )
